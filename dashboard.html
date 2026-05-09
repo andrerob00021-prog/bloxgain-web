@@ -3,72 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blox Gain | Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style-v2.css">
+    <title>Blox Gain | Gold</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style-v3.css">
 </head>
-<body>
+<body onclick="startMusic()">
     <div class="background-animate"></div>
     
+    <audio id="bgMusic" loop>
+        <source src="https://www.bensound.com/bensound-music/bensound-slowmotion.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="clickSound">
+        <source src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" type="audio/mpeg">
+    </audio>
+
     <div class="dash-container">
         <header class="user-bar">
-            <div class="user-info">
-                <div class="avatar-ring">
-                    <img src="https://www.roblox.com/headshot-thumbnail/image?userId=1&width=420&height=420&format=png" id="userAvatar" alt="Avatar">
-                </div>
-                <div>
-                    <h2 id="displayNick">Carregando...</h2>
-                    <span class="badge">MEMBRO PREMIUM</span>
-                </div>
-            </div>
+            <h2 id="displayNick">Carregando...</h2>
             <button onclick="logout()" class="btn-exit">Sair</button>
         </header>
 
         <section class="main-card">
-            <p class="label">SALDO DISPONÍVEL</p>
-            <div class="balance-group">
-                <span class="currency">BXC</span>
-                <h1 id="balance">0</h1>
-            </div>
-            <button class="btn-action pulse">RETIRAR ROBUX</button>
+            <p>SALDO BXC</p>
+            <h1 id="balance">0</h1>
+            <button onclick="playClick(); checkWithdraw()" class="btn-action pulse">RETIRAR ROBUX</button>
         </section>
 
-        <section class="tasks">
-            <h3>Atividades Disponíveis</h3>
-            <div class="card-task" onclick="earn(5)">
-                <div class="icon-play">▶</div>
-                <div class="text">
-                    <h4>Vídeo Premiado</h4>
-                    <p>Ganhe +5 BXC agora</p>
-                </div>
-                <div class="arrow">→</div>
+        <div class="card-task" onclick="playClick(); earn(5)">
+            <span>▶</span>
+            <div>
+                <h4>Vídeo Premiado</h4>
+                <p>+5 BXC</p>
             </div>
-        </section>
+        </div>
     </div>
 
     <div id="toast" class="toast-notification"></div>
 
     <script>
         let balance = parseInt(localStorage.getItem('bxcBalance')) || 0;
-        const nick = localStorage.getItem('robloxNick') || 'Convidado';
-        
-        document.getElementById('displayNick').innerText = nick;
+        document.getElementById('displayNick').innerText = localStorage.getItem('robloxNick') || 'User';
         document.getElementById('balance').innerText = balance;
+
+        function startMusic() {
+            const music = document.getElementById('bgMusic');
+            music.volume = 0.2; // Bem baixinho pra ser suave
+            music.play().catch(() => {}); 
+        }
+
+        function playClick() {
+            const click = document.getElementById('clickSound');
+            click.volume = 0.5;
+            click.currentTime = 0;
+            click.play();
+        }
 
         function earn(amount) {
             balance += amount;
             localStorage.setItem('bxcBalance', balance);
             document.getElementById('balance').innerText = balance;
-            
-            // Notificação profissional
-            showToast(`+${amount} BXC creditados com sucesso!`);
+            showToast(`+${amount} BXC Creditado!`);
         }
 
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.innerText = message;
-            toast.classList.add('active');
-            setTimeout(() => toast.classList.remove('active'), 3000);
+        function checkWithdraw() {
+            showToast(balance < 1000 ? "Mínimo: 1000 BXC" : "Processando...");
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.classList.add('active');
+            setTimeout(() => t.classList.remove('active'), 3000);
         }
 
         function logout() {
