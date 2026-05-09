@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blox Gain | Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -13,38 +13,40 @@
     <div class="dash-container">
         <header class="user-bar">
             <div class="user-info">
-                <div class="avatar-placeholder"></div>
+                <div class="avatar-ring">
+                    <img src="https://www.roblox.com/headshot-thumbnail/image?userId=1&width=420&height=420&format=png" id="userAvatar" alt="Avatar">
+                </div>
                 <div>
-                    <h2 id="displayNick">User</h2>
-                    <span class="status-tag">Membro Ativo</span>
+                    <h2 id="displayNick">Carregando...</h2>
+                    <span class="badge">MEMBRO PREMIUM</span>
                 </div>
             </div>
-            <button onclick="logout()" class="btn-logout">Sair</button>
+            <button onclick="logout()" class="btn-exit">Sair</button>
         </header>
 
-        <main class="stats-card">
-            <p>SALDO DISPONÍVEL</p>
-            <div class="balance-row">
+        <section class="main-card">
+            <p class="label">SALDO DISPONÍVEL</p>
+            <div class="balance-group">
+                <span class="currency">BXC</span>
                 <h1 id="balance">0</h1>
-                <span>BXC</span>
             </div>
-            <button class="btn-withdraw">RETIRAR ROBUX</button>
-        </main>
+            <button class="btn-action pulse">RETIRAR ROBUX</button>
+        </section>
 
-        <section class="earn-section">
-            <h3>Ganhar Moedas</h3>
-            <div class="task-card">
-                <div class="task-icon">▶</div>
-                <div class="task-info">
+        <section class="tasks">
+            <h3>Atividades Disponíveis</h3>
+            <div class="card-task" onclick="earn(5)">
+                <div class="icon-play">▶</div>
+                <div class="text">
                     <h4>Vídeo Premiado</h4>
-                    <p>Assista e ganhe +5 BXC</p>
+                    <p>Ganhe +5 BXC agora</p>
                 </div>
-                <button onclick="earn(5)" class="btn-play">PLAY</button>
+                <div class="arrow">→</div>
             </div>
         </section>
     </div>
 
-    <div id="toast" class="toast"></div>
+    <div id="toast" class="toast-notification"></div>
 
     <script>
         let balance = parseInt(localStorage.getItem('bxcBalance')) || 0;
@@ -57,14 +59,16 @@
             balance += amount;
             localStorage.setItem('bxcBalance', balance);
             document.getElementById('balance').innerText = balance;
-            showToast(`+${amount} BXC adicionados!`);
+            
+            // Notificação profissional
+            showToast(`+${amount} BXC creditados com sucesso!`);
         }
 
-        function showToast(msg) {
+        function showToast(message) {
             const toast = document.getElementById('toast');
-            toast.innerText = msg;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
+            toast.innerText = message;
+            toast.classList.add('active');
+            setTimeout(() => toast.classList.remove('active'), 3000);
         }
 
         function logout() {
