@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Blox Gain | Dashboard</title>
+    <style>
+        body { background-color: #0b0f1a; color: #e2e8f0; font-family: sans-serif; }
+        .glass-card { background: #161b2c; border: 1px solid #2d3748; border-radius: 1.2rem; }
+        .btn-gradient { background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%); }
+        .avatar-ring { border: 2px solid #3b82f6; padding: 2px; }
+        /* Adiciona um efeitozinho de carregamento */
+        .avatar-loading {
+            background: linear-gradient(110deg, #161b2c 8%, #1f293a 18%, #161b2c 33%);
+            background-size: 200% 100%;
+            animation: 1.5s shine linear infinite;
+        }
+        @keyframes shine { to { background-position-right: -200%; } }
+    </style>
+</head>
+<body class="p-5 pb-10">
+    <div class="flex justify-between items-center mb-8">
+        <div class="flex items-center gap-3">
+            <div id="avatar-container" class="relative">
+                <img id="user-avatar" src="https://images.rbxcdn.com/f044958189873f1d0ca598d9c158580a.png" class="w-12 h-12 rounded-full bg-slate-800 avatar-ring shadow-lg shadow-blue-500/20 avatar-loading" onerror="this.src='https://images.rbxcdn.com/f044958189873f1d0ca598d9c158580a.png';">
+            </div>
+            <div>
+                <p id="user-name" class="text-white font-black text-sm tracking-tight">Carregando...</p>
+                <p class="text-[10px] text-blue-400 font-bold uppercase">Membro Ativo</p>
+            </div>
+        </div>
+        <div class="bg-slate-800 px-4 py-2 rounded-2xl border border-slate-700 flex items-center gap-2 shadow-inner">
+            <span class="text-yellow-400 text-sm">💎</span>
+            <span id="coins" class="font-mono font-bold text-white text-sm">0</span>
+        </div>
+    </div>
+
+    <div class="glass-card p-8 mb-8 text-center shadow-2xl relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 blur-3xl -mr-10 -mt-10"></div>
+        <p class="text-slate-400 text-xs font-medium uppercase tracking-widest">Saldo BloxGain</p>
+        <h2 class="text-5xl font-black my-4 tracking-tighter text-white"><span id="display-balance">0</span> <span class="text-xl text-slate-600">BXC</span></h2>
+        <button onclick='alert("Mínimo para saque: 1000 BXC")' class="w-full btn-gradient py-4 rounded-xl font-black text-lg shadow-lg shadow-blue-500/30 active:scale-95 transition text-white">RETIRAR ROBUX</button>
+    </div>
+
+    <h3 class="text-lg font-bold mb-5 flex items-center gap-2 text-white">
+        <span class="w-1.5 h-5 bg-blue-500 rounded-full"></span>
+        Ganhar Moedas
+    </h3>
+    
+    <div class="space-y-4">
+        <div class="glass-card p-5 flex justify-between items-center group active:bg-slate-800 transition">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-blue-500/10 rounded-xl text-blue-400 font-bold">▶</div>
+                <div>
+                    <p class="font-bold text-white text-sm uppercase tracking-wide">Vídeo Premiado</p>
+                    <p class="text-[10px] text-blue-400 font-bold">Assista e ganhe +5 BXC</p>
+                </div>
+            </div>
+            <button onclick="addCoin()" class="bg-slate-700 text-white px-5 py-2.5 rounded-lg text-sm font-bold active:bg-blue-600 shadow-md">PLAY</button>
+        </div>
+    </div>
+
+    <script>
+        let userId = localStorage.getItem('rbx_user') || prompt('Digite seu Nick do Roblox:');
+        if (userId) {
+            localStorage.setItem('rbx_user', userId);
+            updateProfile(userId);
+        }
+
+        async function updateProfile(username) {
+            document.getElementById('user-name').innerText = username;
+            const avatarImg = document.getElementById('user-avatar');
+            
+            try {
+                // Tenta buscar o ID pelo nome
+                const userRes = await fetch('https://users.roblox.com/v1/users/search?keyword=' + username + '&limit=1');
+                const userData = await userRes.json();
+                
+                if(userData.data && userData.data.length > 0) {
+                    const rbxId = userData.data[0].id;
+                    // Tenta buscar o avatar headshot
+                    const thumbRes = await fetch('https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=' + rbxId + '&size=150x150&format=Png&isCircular=true');
+                    const thumbData = await thumbRes.json();
+                    
+                    if(thumbData.data && thumbData.data.length > 0) {
+                        // Se funcionar, troca a imagem padrão pela real
+                        avatarImg.src = thumbData.data[0].imageUrl;
+                        avatarImg.classList.remove('avatar-loading'); // Tira o efeito de loading
+                    }
+                } else {
+                     // Se não achar o usuário, mantém a padrão
+                     avatarImg.classList.remove('avatar-loading');
+                }
+            } catch (e) {
+                // Se der erro de CORS ou API, mantém a padrão
+                console.log('Erro API Roblox (CORS)');
+                avatarImg.classList.remove('avatar-loading');
+            }
+        }
+
+        async function loadBalance() {
+            const res = await fetch('/balance/' + userId);
+            const data = await res.json();
+            document.getElementById('coins').innerText = data.coins;
+            document.getElementById('display-balance').innerText = data.coins;
+        }
+
+        async function addCoin() {
+            const res = await fetch('/add-coins', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ userId: userId, amount: 5 })
+            });
+            const data = await res.json();
+            if(data.success) {
+                loadBalance();
+                alert('BXC Creditado!');
+            }
+        }
+        loadBalance();
+    </script>
+</body>
+</html>
