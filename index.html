@@ -4,60 +4,83 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blox Gain | Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: #0a0e1a; color: white; min-height: 100vh; display: flex; justify-content: center; padding-top: 40px; }
-        .dash-container { width: 90%; max-width: 400px; }
-        .main-card { background: #161b2c; border: 1px solid #232d45; border-radius: 24px; padding: 35px 20px; text-align: center; margin-bottom: 25px; }
-        .btn-action { width: 100%; background: #3b82f6; color: white; border: none; padding: 16px; border-radius: 14px; font-weight: bold; cursor: pointer; }
-        .toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: #3b82f6; color: white; padding: 12px 25px; border-radius: 50px; transition: 0.5s; font-weight: bold; }
-        .toast.show { top: 30px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+        body { background: #0a0e1a; color: white; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .container { width: 100%; max-width: 400px; }
+        
+        /* Header original */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .user-info { display: flex; align-items: center; gap: 10px; }
+        .avatar { width: 40px; height: 40px; background: #1e293b; border-radius: 50%; border: 1px solid #3b82f6; }
+
+        /* Card de Saldo Original */
+        .balance-card { background: #161b2c; border: 1px solid #232d45; border-radius: 15px; padding: 30px; text-align: center; margin-bottom: 20px; }
+        .balance-card p { font-size: 0.7rem; color: #94a3b8; }
+        .balance-card h1 { font-size: 3.5rem; margin: 10px 0; }
+        .btn-withdraw { width: 100%; background: #3b82f6; color: white; border: none; padding: 15px; border-radius: 10px; font-weight: bold; }
+
+        /* Lista de Tarefas */
+        .task { background: #161b2c; border: 1px solid #232d45; border-radius: 12px; padding: 15px; display: flex; align-items: center; gap: 15px; margin-bottom: 10px; }
+        .play-icon { background: #1e293b; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #3b82f6; }
+
+        /* Toast */
+        .toast { position: fixed; top: -50px; left: 50%; transform: translateX(-50%); background: #3b82f6; padding: 10px 20px; border-radius: 20px; transition: 0.5s; font-size: 0.8rem; }
+        .toast.show { top: 20px; }
     </style>
 </head>
-<body onclick="startMusic()">
+<body onclick="playMusic()">
     <audio id="bgMusic" loop><source src="https://www.bensound.com/bensound-music/bensound-slowmotion.mp3" type="audio/mpeg"></audio>
     <audio id="clickSound"><source src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" type="audio/mpeg"></audio>
 
     <div id="toast" class="toast">Sucesso!</div>
 
-    <div class="dash-container">
-        <header style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h3 id="nick">Usuário</h3>
-            <span style="cursor:pointer;" onclick="localStorage.clear(); window.location.href='login.html'">Sair</span>
-        </header>
+    <div class="container">
+        <div class="header">
+            <div class="user-info">
+                <div class="avatar"></div>
+                <span id="userNick">Player</span>
+            </div>
+            <span style="font-size: 0.8rem; color: #94a3b8; cursor: pointer;" onclick="localStorage.clear(); location.href='login.html'">Sair</span>
+        </div>
 
-        <section class="main-card">
-            <p style="color:#94a3b8; font-size:0.8rem;">SALDO</p>
-            <h1 id="balance" style="font-size:4rem; margin:10px 0;">0</h1>
-            <button class="btn-action" onclick="showToast('Saque indisponível')">RETIRAR</button>
-        </section>
-        
-        <div style="background:#161b2c; padding:20px; border-radius:20px; display:flex; align-items:center; gap:15px; cursor:pointer;" onclick="earn(5)">
-            <div style="background:#1e293b; padding:10px; border-radius:10px;">▶</div>
-            <div><h4>Vídeo Premiado</h4><p style="color:#3b82f6; font-size:0.7rem;">+5 BXC</p></div>
+        <div class="balance-card">
+            <p>SALDO BLOXGAIN</p>
+            <h1 id="bal">0</h1>
+            <button class="btn-withdraw" onclick="notify('Mínimo 1000 BXC')">RETIRAR ROBUX</button>
+        </div>
+
+        <p style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 10px;">Ganhar Moedas</p>
+        <div class="task" onclick="add(5)">
+            <div class="play-icon">▶</div>
+            <div>
+                <p style="font-size: 0.9rem; font-weight: bold;">Vídeo Premiado</p>
+                <p style="font-size: 0.7rem; color: #3b82f6;">+5 BXC</p>
+            </div>
         </div>
     </div>
 
     <script>
-        let bxc = parseInt(localStorage.getItem('bxcBalance')) || 0;
-        document.getElementById('balance').innerText = bxc;
-        document.getElementById('nick').innerText = localStorage.getItem('robloxNick') || 'Player';
+        let b = parseInt(localStorage.getItem('bxcBalance')) || 0;
+        document.getElementById('bal').innerText = b;
+        document.getElementById('userNick').innerText = localStorage.getItem('robloxNick') || 'User';
 
-        function startMusic() {
+        function playMusic() {
             const m = document.getElementById('bgMusic');
-            m.volume = 0.05; // Música bem baixinha
+            m.volume = 0.05; // 5% de volume (bem suave)
             m.play().catch(()=>{});
         }
-        function earn(amt) {
+
+        function add(v) {
             const s = document.getElementById('clickSound');
-            s.volume = 0.2; s.play();
-            bxc += amt;
-            localStorage.setItem('bxcBalance', bxc);
-            document.getElementById('balance').innerText = bxc;
-            showToast(`+${amt} BXC!`);
+            s.volume = 0.2; s.play(); // Som de clique baixo
+            b += v;
+            localStorage.setItem('bxcBalance', b);
+            document.getElementById('bal').innerText = b;
+            notify(`+${v} BXC Creditado!`);
         }
-        function showToast(msg) {
+
+        function notify(msg) {
             const t = document.getElementById('toast');
             t.innerText = msg; t.classList.add('show');
             setTimeout(() => t.classList.remove('show'), 3000);

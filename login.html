@@ -4,29 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blox Gain | Login</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: #0a0e1a; color: white; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .login-card { background: #161b2c; border: 1px solid #232d45; padding: 40px; border-radius: 24px; width: 90%; max-width: 360px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        h1 { font-size: 1.8rem; margin-bottom: 10px; font-weight: 900; color: #3b82f6; }
-        input { width: 100%; background: #0a0e1a; border: 1px solid #232d45; padding: 15px; border-radius: 12px; color: white; margin-bottom: 20px; outline: none; }
-        .btn-login { width: 100%; background: #3b82f6; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; }
+        body { background: #0a0e1a; color: white; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .card { background: #161b2c; padding: 30px; border-radius: 15px; text-align: center; width: 300px; border: 1px solid #232d45; }
+        input { width: 100%; padding: 12px; margin: 15px 0; background: #0a0e1a; border: 1px solid #232d45; color: white; border-radius: 8px; }
+        button { width: 100%; padding: 12px; background: #3b82f6; border: none; color: white; font-weight: bold; border-radius: 8px; cursor: pointer; }
     </style>
 </head>
 <body>
-    <div class="login-card">
-        <h1>BLOX GAIN</h1>
-        <p style="color:#94a3b8; margin-bottom:20px;">Entre com seu nick do Roblox</p>
-        <input type="text" id="robloxNick" placeholder="Nickname...">
-        <button class="btn-login" onclick="doLogin()">ENTRAR</button>
+    <div class="card">
+        <h2>Blox Gain</h2>
+        <input type="text" id="nick" placeholder="Nick do Roblox">
+        <button onclick="save()">Entrar</button>
     </div>
     <script>
-        function doLogin() {
-            const nick = document.getElementById('robloxNick').value;
-            if(nick.length < 3) return alert("Nick muito curto!");
-            localStorage.setItem('robloxNick', nick);
-            window.location.href = 'index.html';
+        function save() {
+            const n = document.getElementById('nick').value;
+            if(n) { localStorage.setItem('robloxNick', n); window.location.href='index.html'; }
         }
     </script>
 </body>
