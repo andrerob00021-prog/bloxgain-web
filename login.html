@@ -6,21 +6,67 @@
     <title>Blox Gain | Login</title>
     <style>
         body { background: #0a0e1a; color: white; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .card { background: #161b2c; padding: 30px; border-radius: 15px; text-align: center; width: 300px; border: 1px solid #232d45; }
-        input { width: 100%; padding: 12px; margin: 15px 0; background: #0a0e1a; border: 1px solid #232d45; color: white; border-radius: 8px; }
-        button { width: 100%; padding: 12px; background: #3b82f6; border: none; color: white; font-weight: bold; border-radius: 8px; cursor: pointer; }
+        .card { background: #161b2c; padding: 30px; border-radius: 20px; text-align: center; width: 340px; border: 1px solid #232d45; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h2 { margin-bottom: 20px; color: #3b82f6; }
+        
+        .google-btn { background: white; color: #000; padding: 12px; border-radius: 8px; border: none; width: 100%; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px; font-size: 0.9rem; }
+        .divider { margin: 20px 0; border-bottom: 1px solid #232d45; position: relative; }
+        .divider span { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #161b2c; padding: 0 10px; font-size: 0.8rem; color: #94a3b8; }
+        
+        input { width: 100%; padding: 14px; margin: 10px 0; background: #0a0e1a; border: 1px solid #232d45; color: white; border-radius: 10px; outline: none; }
+        input:focus { border-color: #3b82f6; }
+        
+        button.enter-btn { width: 100%; padding: 14px; background: #3b82f6; border: none; color: white; font-weight: bold; border-radius: 10px; cursor: pointer; transition: 0.3s; }
+        button.enter-btn:active { transform: scale(0.98); }
+        
+        #error-msg { color: #ef4444; font-size: 0.75rem; margin-top: 10px; display: none; }
     </style>
 </head>
 <body>
     <div class="card">
         <h2>Blox Gain</h2>
-        <input type="text" id="nick" placeholder="Nick do Roblox">
-        <button onclick="save()">Entrar</button>
+        
+        <button class="google-btn" onclick="alert('Sistema de API Google em integração...')">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="18">
+            Entrar com Google
+        </button>
+
+        <div class="divider"><span>OU</span></div>
+
+        <input type="email" id="email" placeholder="Seu E-mail">
+        <input type="text" id="robloxNick" placeholder="Seu Nick do Roblox">
+        
+        <p id="error-msg"></p>
+        
+        <button class="enter-btn" onclick="validateAndLogin()">VERIFICAR CONTA</button>
     </div>
+
     <script>
-        function save() {
-            const n = document.getElementById('nick').value;
-            if(n) { localStorage.setItem('robloxNick', n); window.location.href='index.html'; }
+        function validateAndLogin() {
+            const email = document.getElementById('email').value;
+            const nick = document.getElementById('robloxNick').value;
+            const error = document.getElementById('error-msg');
+
+            // Simulação de validação de conta
+            if (!email.includes('@')) {
+                error.innerText = "Insira um Gmail válido!";
+                error.style.display = "block";
+                return;
+            }
+
+            if (nick.length < 3) {
+                error.innerText = "Nick do Roblox não encontrado!";
+                error.style.display = "block";
+                return;
+            }
+
+            // Se passar no teste
+            error.style.display = "none";
+            localStorage.setItem('robloxNick', nick);
+            localStorage.setItem('userEmail', email);
+            
+            alert("Conta reconhecida com sucesso!");
+            window.location.href = 'index.html';
         }
     </script>
 </body>
