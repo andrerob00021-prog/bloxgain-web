@@ -3,24 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blox Gain | Gold</title>
+    <title>Blox Gain | Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style-v3.css">
+    <link rel="stylesheet" href="style-final.css">
 </head>
 <body onclick="startMusic()">
-    <div class="background-animate"></div>
+    <div id="bg-anim" class="background-animate"></div>
     
-    <audio id="bgMusic" loop>
-        <source src="https://www.bensound.com/bensound-music/bensound-slowmotion.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="clickSound">
-        <source src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" type="audio/mpeg">
-    </audio>
+    <audio id="bgMusic" loop><source src="https://www.bensound.com/bensound-music/bensound-slowmotion.mp3" type="audio/mpeg"></audio>
+    <audio id="clickSound"><source src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" type="audio/mpeg"></audio>
 
     <div class="dash-container">
         <header class="user-bar">
             <h2 id="displayNick">Carregando...</h2>
-            <button onclick="logout()" class="btn-exit">Sair</button>
+            <div class="header-btns">
+                <button onclick="toggleSettings()" class="btn-settings">⚙️</button>
+                <button onclick="logout()" class="btn-exit">Sair</button>
+            </div>
         </header>
 
         <section class="main-card">
@@ -29,12 +28,28 @@
             <button onclick="playClick(); checkWithdraw()" class="btn-action pulse">RETIRAR ROBUX</button>
         </section>
 
-        <div class="card-task" onclick="playClick(); earn(5)">
-            <span>▶</span>
-            <div>
-                <h4>Vídeo Premiado</h4>
-                <p>+5 BXC</p>
+        <div class="card-task" onclick="playClick(); earn(10)">
+            <span>💎</span>
+            <div><h4>Tarefa Diária</h4><p>+10 BXC</p></div>
+        </div>
+    </div>
+
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <h3>Configurações</h3>
+            <div class="setting-item">
+                <span>Música</span>
+                <input type="checkbox" id="musicToggle" checked onchange="updateSettings()">
             </div>
+            <div class="setting-item">
+                <span>Efeitos de Som</span>
+                <input type="checkbox" id="sfxToggle" checked onchange="updateSettings()">
+            </div>
+            <div class="setting-item">
+                <span>Animação de Fundo</span>
+                <input type="checkbox" id="animToggle" checked onchange="updateSettings()">
+            </div>
+            <button onclick="toggleSettings()" class="btn-close">Fechar</button>
         </div>
     </div>
 
@@ -45,41 +60,40 @@
         document.getElementById('displayNick').innerText = localStorage.getItem('robloxNick') || 'User';
         document.getElementById('balance').innerText = balance;
 
-        function startMusic() {
-            const music = document.getElementById('bgMusic');
-            music.volume = 0.2; // Bem baixinho pra ser suave
-            music.play().catch(() => {}); 
+        function playClick() {
+            if(document.getElementById('sfxToggle').checked) {
+                const s = document.getElementById('clickSound'); s.currentTime = 0; s.play();
+            }
         }
 
-        function playClick() {
-            const click = document.getElementById('clickSound');
-            click.volume = 0.5;
-            click.currentTime = 0;
-            click.play();
+        function updateSettings() {
+            const music = document.getElementById('bgMusic');
+            const anim = document.getElementById('bg-anim');
+            
+            if(!document.getElementById('musicToggle').checked) music.pause();
+            else music.play();
+            
+            anim.style.display = document.getElementById('animToggle').checked ? 'block' : 'none';
+        }
+
+        function toggleSettings() {
+            document.getElementById('settingsModal').classList.toggle('active');
         }
 
         function earn(amount) {
             balance += amount;
             localStorage.setItem('bxcBalance', balance);
             document.getElementById('balance').innerText = balance;
-            showToast(`+${amount} BXC Creditado!`);
-        }
-
-        function checkWithdraw() {
-            showToast(balance < 1000 ? "Mínimo: 1000 BXC" : "Processando...");
+            showToast(`+${amount} BXC!`);
         }
 
         function showToast(msg) {
             const t = document.getElementById('toast');
-            t.innerText = msg;
-            t.classList.add('active');
+            t.innerText = msg; t.classList.add('active');
             setTimeout(() => t.classList.remove('active'), 3000);
         }
 
-        function logout() {
-            localStorage.clear();
-            window.location.href = 'index.html';
-        }
+        function logout() { localStorage.clear(); window.location.href = 'index.html'; }
     </script>
 </body>
 </html>
